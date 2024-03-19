@@ -92,21 +92,18 @@ async function main() {
 
   // 
   for (const adminItem of adminData) {
-    const { username, email, password, phone, isActive, isVerified } = adminItem;
+    const { username, email, password, isActive } = adminItem;
 
     const hash = await bcrypt.hash(password, 15);
 
     const admin = await prisma.admin.upsert({
-      where: { email, username, phone },
+      where: { email, username },
       update: {},
       create: {
         username,
         email,
         password: hash,
-        phone,
         isActive,
-        isVerified,
-        verifiedAt: new Date(),
       },
     });
 
@@ -142,10 +139,7 @@ async function main() {
         email: faker.internet.email(),
         username: faker.internet.userName(),
         password: await bcrypt.hash('password', 15),
-        phone: faker.phone.number(),
         isActive: true,
-        isVerified: true,
-        verifiedAt: new Date(),
       },
     });
 

@@ -19,7 +19,7 @@ import { UpdateRoleDto } from '../dto/update-role.dto';
 import { AbilityGuard } from '@/modules/auth/ability/ability.guard';
 import { PageDto, PageOptionsDto } from '@/common/dto';
 import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
-import { RoleResponse } from '../interface/RoleResponse';
+import { Role } from '@prisma/client';
 
 @ApiTags('roles')
 @Controller({
@@ -38,7 +38,7 @@ export class RolesController {
   @SetMetadata('permissions', ['role.view'])
   async findAll(
     @Query() pageOptionsDto: PageOptionsDto,
-  ): Promise<PageDto<RoleResponse>> {
+  ): Promise<PageDto<Role>> {
     return await this._rolesService.findAll(pageOptionsDto);
   }
 

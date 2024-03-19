@@ -16,9 +16,6 @@ import { ResponseInterceptor } from './common/interceptor/response.interceptor';
 import { ErrorFilter } from './common/filter/error.filter';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
-import { UserModule } from './modules/user/user.module';
-import { WithdrawModule } from './modules/withdraw/withdraw.module';
-import { TransactionModule } from './modules/transaction/transaction.module';
 
 @Module({
   imports: [
@@ -38,17 +35,6 @@ import { TransactionModule } from './modules/transaction/transaction.module';
       ],
       serveRoot: '/public',
     }),
-    // CacheModule.register({
-    //   isGlobal: true,
-    //   store: redisStore,
-    //   host: 'redis',
-    //   port: 6379,
-    // }),
-    // CacheModule.register({
-    //   isGlobal: true,
-    //   store: redisStore,
-    //   socket: { host: "localhost", port: 6379 },
-    // }),
 
     ThrottlerModule.forRoot([{
       ttl: 1,
@@ -56,9 +42,6 @@ import { TransactionModule } from './modules/transaction/transaction.module';
     }]),
     AuthModule,
     AdminsModule,
-    UserModule,
-    WithdrawModule,
-    TransactionModule,
 
   ],
   controllers: [AppController],

@@ -2,14 +2,13 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PageDto, PageMetaDto, PageOptionsDto } from '@/common/dto';
 import { CreatePermissionDto } from '../dto/create-permission.dto';
 import { PrismaService } from '@/modules/prisma/prisma.service';
-import { Prisma } from '@prisma/client';
-import { PermissionResponse } from '../interface/PermissionResponse';
+import { Permission, Prisma } from '@prisma/client';
 
 @Injectable()
 export class PermissionsService {
   constructor(private readonly _prisma: PrismaService) { }
 
-  async findAll(query: PageOptionsDto): Promise<PageDto<PermissionResponse>> {
+  async findAll(query: PageOptionsDto): Promise<PageDto<Permission>> {
     const limit: number = query.limit || 10;
     const page: number = query.page || 1;
     const skip: number = (page - 1) * limit;
@@ -64,7 +63,7 @@ export class PermissionsService {
 
   }
 
-  async findOne(id: number): Promise<PermissionResponse> {
+  async findOne(id: number): Promise<Permission> {
     return await this._prisma.permission.findUnique({
       where: {
         id: id,

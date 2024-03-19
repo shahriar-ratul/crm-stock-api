@@ -1,10 +1,15 @@
 export const permissionData = [
   {
-    name: "Dashboard",
-    slug: "dashboard",
+    name: "Admin Dashboard",
+    slug: "admin.dashboard",
     group: "dashboard",
   },
-
+  {
+    name: "User Dashboard",
+    slug: "user.dashboard",
+    group: "dashboard",
+  },
+  // admin
   {
     name: "Admin View",
     slug: "admin.view",
@@ -34,157 +39,54 @@ export const permissionData = [
     group: "admin",
   },
 
-  // user
+  // role
   {
-    name: "User View",
-    slug: "user.view",
-    group: "user",
+    name: "Role View",
+    slug: "role.view",
+    group: "role",
+  },
+  {
+    name: "Role Create",
+    slug: "role.create",
+    group: "role",
+  }, {
+    name: "Role Update",
+    slug: "role.update",
+    group: "role",
+  }, {
+    name: "Role Delete",
+    slug: "role.delete",
+    group: "role",
+  }, {
+    name: "Role Status",
+    slug: "role.status",
+    group: "role",
   },
 
+  // permission
   {
-    name: "User Create",
-    slug: "user.create",
-    group: "user",
-  },
-
-  {
-    name: "User Update",
-    slug: "user.update",
-    group: "user",
-  },
-
-  {
-    name: "User Delete",
-    slug: "user.delete",
-    group: "user",
+    name: "permission View",
+    slug: "permission.view",
+    group: "permission",
   },
   {
-    name: "User Status",
-    slug: "user.active",
-    group: "user",
-  },
-
-
-  // wallet
-  {
-    name: "Wallet View",
-    slug: "wallet.view",
-    group: "wallet",
-  },
-
-  {
-    name: "Wallet Create",
-    slug: "wallet.create",
-    group: "wallet",
-  },
-
-  {
-    name: "Wallet Update",
-    slug: "wallet.update",
-    group: "wallet",
-  },
-
-  {
-    name: "Wallet Delete",
-    slug: "wallet.delete",
-    group: "wallet",
+    name: "permission Create",
+    slug: "permission.create",
+    group: "permission",
   },
   {
-    name: "Wallet Status",
-    slug: "wallet.active",
-    group: "wallet",
+    name: "permission Update",
+    slug: "permission.update",
+    group: "permission",
+  },
+  {
+    name: "permission Delete",
+    slug: "permission.delete",
+    group: "permission",
   },
 
 
-  // transaction
-  {
-    name: "Transaction View",
-    slug: "transaction.view",
-    group: "transaction",
-  },
 
-  {
-    name: "Transaction Create",
-    slug: "transaction.create",
-    group: "transaction",
-  },
-
-  {
-    name: "Transaction Update",
-    slug: "transaction.update",
-    group: "transaction",
-  },
-
-  {
-    name: "Transaction Delete",
-    slug: "transaction.delete",
-    group: "transaction",
-  },
-  {
-    name: "Transaction Status",
-    slug: "transaction.active",
-    group: "transaction",
-  },
-
-  // withdrawal
-  {
-    name: "Withdrawal View",
-    slug: "withdrawal.view",
-    group: "withdrawal",
-  },
-
-  {
-    name: "Withdrawal Create",
-    slug: "withdrawal.create",
-    group: "withdrawal",
-  },
-
-  {
-    name: "Withdrawal Update",
-    slug: "withdrawal.update",
-    group: "withdrawal",
-  },
-
-  {
-    name: "Withdrawal Delete",
-    slug: "withdrawal.delete",
-    group: "withdrawal",
-  },
-  {
-    name: "Withdrawal Status",
-    slug: "withdrawal.active",
-    group: "withdrawal",
-  },
-
-  // withdrawal request
-  {
-    name: "Withdrawal Request View",
-    slug: "withdrawal-request.view",
-    group: "withdrawal-request",
-  },
-
-  {
-    name: "Withdrawal Request Create",
-    slug: "withdrawal-request.create",
-    group: "withdrawal-request",
-  },
-
-  {
-    name: "Withdrawal Request Update",
-    slug: "withdrawal-request.update",
-    group: "withdrawal-request",
-  },
-
-  {
-    name: "Withdrawal Request Delete",
-    slug: "withdrawal-request.delete",
-    group: "withdrawal-request",
-  },
-  {
-    name: "Withdrawal Request Status",
-    slug: "withdrawal-request.active",
-    group: "withdrawal-request",
-  },
 
   // profile
   {

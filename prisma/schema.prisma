@@ -6,40 +6,50 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
 model Admin {
   id          Int               @id @default(autoincrement())
-  firstName   String?
-  lastName    String?
+  fullName    String?
   dob         DateTime?
+  contactNo   String?
   username    String?           @unique
   email       String            @unique
-  phone       String            @unique
   password    String
-  isVerified  Boolean           @default(false)
-  isActive    Boolean           @default(true)
   photo       String?
-  verifiedAt  DateTime?
+  joinedDate  DateTime?
+  
+  referrerId  Int?  
+  referrer   Admin? @relation("ReferredBy", fields: [referrerId], references: [id] ,onDelete:  SetNull)
+  referredByUsers  Admin[]      @relation("ReferredBy")
+
+  relationship String?
+
+  platform    Json?
+
+  lastLogin   DateTime?
+  
+  country     String?
+  city        String?
+  address     String?
+  postcode    String?
+
+  isActive    Boolean           @default(true)
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
-  roles       AdminRole[]
-  permissions AdminPermission[]
-
-  addressLine1 String?
-  addressLine2 String?
-  city         String?
-  state        String?
-  nationality  String?
-  zipCode      String?
-
-  tokens Token[]
 
   deleted   Boolean   @default(false)
   deletedBy Int?
   deletedAt DateTime?
+  
+  roles       AdminRole[]
+  permissions AdminPermission[]
+  tokens Token[]
+
+  stocks Stock[]
+
 }
 
 model Permission {
@@ -119,3 +129,87 @@ model Token {
   updatedAt    DateTime  @updatedAt
 }
 
+model Category{
+  id Int @id @default(autoincrement())
+  name String
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  stocks Stock[]
+}
+
+model Source{
+  id Int @id @default(autoincrement())
+  name String
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  stocks Stock[]
+}
+
+model Route{
+  id Int @id @default(autoincrement())
+  name String 
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  stocks Stock[]
+}
+
+model Stock{
+  id Int @id @default(autoincrement())
+  name String
+  stockID String
+  entryDate DateTime
+  batch String
+  imageCover String
+  qty Int
+  currentStock Int
+  costPerUnit Float
+  localShippingCost Float
+  internationalShippingCost Float
+  customsTax Float
+  salePrice Float
+  marketPrice Float
+  partnerPrice Float
+  platforms Json
+
+  trackingStatus String
+  trackingNumberLocal String
+  trackingNumberInternational String
+
+  email String
+
+  isActive Boolean @default(true)
+
+  categoryID Int
+  category Category @relation(fields: [categoryID], references: [id],onDelete:  Cascade)
+
+  sourceID Int
+  source Source @relation(fields: [sourceID], references: [id],onDelete:  Cascade)
+
+  routeID Int
+  route Route @relation(fields: [routeID], references: [id],onDelete:  Cascade)
+
+  adminId Int
+  admin Admin @relation(fields: [adminId], references: [id],onDelete:  Cascade)
+
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  images StockImages[]
+}
+
+model StockImages{
+  id Int @id @default(autoincrement())
+  stockID Int
+  stock Stock @relation(fields: [stockID], references: [id],onDelete:  Cascade)
+  path String
+  type String
+  size Int
+  url String
+}

@@ -85,11 +85,6 @@ export class AuthService {
       throw new BadRequestException('Password is incorrect');
     }
 
-    if (user.isVerified == false) {
-
-      throw new BadRequestException('Your Account is not verified. Please Wait for Admin to Verify Your Account');
-    }
-
 
     if (user.isActive == false) {
       throw new BadRequestException('Your Have Been Blocked. Please Contact Admin');

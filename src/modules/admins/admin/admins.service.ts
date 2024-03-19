@@ -2,10 +2,9 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateAdminDto } from '../dto/create-admin.dto';
 import { UpdateAdminDto } from '../dto/update-admin.dto';
 import { PageDto, PageMetaDto, PageOptionsDto } from '@/common/dto';
-import { AdminResponse } from '../interface/AdminResponse';
 import { hash } from 'bcrypt';
 import { PrismaService } from '@/modules/prisma/prisma.service';
-import { Prisma } from '@prisma/client';
+import { Admin, Prisma } from '@prisma/client';
 
 @Injectable()
 export class AdminsService {
@@ -14,7 +13,7 @@ export class AdminsService {
   ) { }
 
   // get all admins
-  async findAll(query: PageOptionsDto): Promise<PageDto<AdminResponse>> {
+  async findAll(query: PageOptionsDto): Promise<PageDto<Admin>> {
     const limit: number = query.limit || 10;
     const page: number = query.page || 1;
     const skip: number = (page - 1) * limit;
@@ -49,7 +48,6 @@ export class AdminsService {
         OR: [
           { email: { contains: search } },
           { username: { contains: search } },
-          { phone: { contains: search } },
         ],
         roles: {
           some: {
@@ -104,13 +102,18 @@ export class AdminsService {
   }
 
   // add admin
-  async create(createAdminDto: CreateAdminDto) {
+  async create(
+    createAdminDto: CreateAdminDto,
+    files: Array<Express.Multer.File>
+  ) {
+    console.log(files);
+
     const checkAdmin = await this._prisma.admin.findFirst({
       where: {
         OR: [
           { email: createAdminDto.email },
           { username: createAdminDto.username },
-          { phone: createAdminDto.phone },
+
         ],
       }
     });
@@ -123,11 +126,9 @@ export class AdminsService {
 
     const admin = await this._prisma.admin.create({
       data: {
-        firstName: createAdminDto.firstName,
-        lastName: createAdminDto.lastName,
+        fullName: createAdminDto.fullName,
         email: createAdminDto.email,
         username: createAdminDto.username,
-        phone: createAdminDto.phone,
         password: password,
         isActive: createAdminDto.isActive ? true : false,
 
@@ -150,6 +151,8 @@ export class AdminsService {
       },
     });
 
+
+
     await this._prisma.adminRole.create({
       data: {
         adminId: admin.id,
@@ -157,19 +160,24 @@ export class AdminsService {
       },
     });
 
-    const adminData = await this._prisma.admin.findUnique({
-      where: {
-        id: admin.id,
-      },
-      include: {
-        roles: true,
-      },
-    });
 
-    delete adminData.password;
+    // if (files && files.length > 0) {
+
+    //   files.map(async (file) => {
+    //     await this._prisma.upload.create({
+    //       data: {
+    //         adminId: admin.id,
+    //         fileName: file.filename,
+    //         url: file.path,
+    //         size: file.size,
+    //         type: file.mimetype,
+    //       },
+    //     })
+    //   });
+    // }
 
     return {
-      data: adminData,
+      data: admin,
       message: 'Admin Created Successfully',
     };
   }
@@ -261,7 +269,6 @@ export class AdminsService {
         OR: [
           { email: updateAdminDto.email },
           { username: updateAdminDto.username },
-          { phone: updateAdminDto.phone },
         ],
       }
     });
@@ -278,7 +285,6 @@ export class AdminsService {
       data: {
         email: updateAdminDto.email ? updateAdminDto.email : data.email,
         username: updateAdminDto.username ? updateAdminDto.username : data.username,
-        phone: updateAdminDto.phone ? updateAdminDto.phone : data.phone,
         isActive: updateAdminDto.isActive ? updateAdminDto.isActive : data.isActive,
 
       },

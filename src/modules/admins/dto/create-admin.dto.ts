@@ -54,22 +54,13 @@ export class CreateAdminDto {
   @ApiProperty({
     type: 'string',
     example: 'admin',
-    description: 'admin firstName',
+    description: 'admin fullName',
   })
   @IsNotEmpty()
   @MinLength(3)
   @MaxLength(255)
-  firstName: string;
-  
-  @ApiProperty({
-    type: 'string',
-    example: 'admin',
-    description: 'admin lastName',
-  })
-  @IsNotEmpty()
-  @MinLength(3)
-  @MaxLength(255)
-  lastName: string;
+  fullName: string;
+
 
   @ApiProperty({
     type: 'string',

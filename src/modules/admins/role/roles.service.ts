@@ -5,8 +5,7 @@ import { UpdateRoleDto } from '../dto/update-role.dto';
 import { PageDto, PageMetaDto, PageOptionsDto } from '@/common/dto';
 import { generateSlug } from '@/common/helpers/GenerateHelpers';
 import { PrismaService } from '@/modules/prisma/prisma.service';
-import { Prisma } from '@prisma/client';
-import { RoleResponse } from '../interface/RoleResponse';
+import { Prisma, Role } from '@prisma/client';
 
 @Injectable()
 export class RolesService {
@@ -15,7 +14,7 @@ export class RolesService {
 
   ) {}
 
-  async findAll(query: PageOptionsDto): Promise<PageDto<RoleResponse>> {
+  async findAll(query: PageOptionsDto): Promise<PageDto<Role>> {
     const limit: number = query.limit || 10;
     const page: number = query.page || 1;
     const skip: number = (page - 1) * limit;

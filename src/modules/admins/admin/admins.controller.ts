@@ -9,6 +9,8 @@ import {
   SetMetadata,
   Query,
   Put,
+  UseInterceptors,
+  UploadedFiles,
 } from '@nestjs/common';
 import { AdminsService } from './admins.service';
 
@@ -18,8 +20,38 @@ import { UpdateAdminDto } from '../dto/update-admin.dto';
 
 import { AbilityGuard } from '@/modules/auth/ability/ability.guard';
 import { PageDto, PageOptionsDto } from '@/common/dto';
-import { AdminResponse } from '../interface/AdminResponse';
 import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
+
+import { diskStorage } from 'multer';
+import * as fs from "fs";
+import * as path from "path";
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { Admin } from '@prisma/client';
+
+
+export const storageAdmin = {
+  storage: diskStorage({
+    destination: "./public/uploads/admins",
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      const extension: string = path.extname(file.originalname);
+      const filename = `${uniqueSuffix}${extension}`;
+      // const filename: string = `${uniqueSuffix}${extension}`;
+      cb(null, filename);
+    },
+  }),
+};
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const deleteFile = (path: string) => {
+  fs.unlink(path, (err) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+  });
+};
+
 
 @ApiTags('admins')
 @Controller({ version: '1', path: 'admins' })
@@ -33,7 +65,7 @@ export class AdminsController {
   @SetMetadata('permissions', ['admin.view'])
   async findAll(
     @Query() pageOptionsDto: PageOptionsDto,
-  ): Promise<PageDto<AdminResponse>> {
+  ): Promise<PageDto<Admin>> {
     return await this._adminsService.findAll(pageOptionsDto);
   }
 
@@ -43,8 +75,18 @@ export class AdminsController {
     description: 'The record has been successfully created.',
   })
   @SetMetadata('permissions', ['admin.create'])
-  async create(@Body() createAdminDto: CreateAdminDto) {
-    return this._adminsService.create(createAdminDto);
+  @UseInterceptors(FilesInterceptor("files", 10, storageAdmin))
+  async create(
+    @UploadedFiles()
+    files: Array<Express.Multer.File>,
+    @Body() createAdminDto: CreateAdminDto
+  ) {
+
+    if (!files && files.length < 1) {
+      throw new Error("File is required");
+    }
+
+    return this._adminsService.create(createAdminDto, files);
   }
 
   @Get(':id')
