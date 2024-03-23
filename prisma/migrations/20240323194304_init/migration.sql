@@ -154,11 +154,11 @@ CREATE TABLE `Platform` (
 -- CreateTable
 CREATE TABLE `Stock` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(191) NOT NULL,
+    `name` VARCHAR(191) NULL,
     `stockID` VARCHAR(191) NOT NULL,
     `entryDate` DATETIME(3) NOT NULL,
     `batch` VARCHAR(191) NOT NULL,
-    `imageCover` VARCHAR(191) NOT NULL,
+    `imageCover` VARCHAR(191) NULL,
     `qty` INTEGER NOT NULL,
     `currentStock` INTEGER NOT NULL,
     `costPerUnit` DOUBLE NOT NULL,

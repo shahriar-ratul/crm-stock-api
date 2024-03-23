@@ -20,7 +20,7 @@ export class StocksService {
     image: Express.Multer.File,
     user: number
   ) {
-    console.log(files);
+
 
     const item = await this._prisma.stock.create({
       data: {
@@ -35,18 +35,34 @@ export class StocksService {
         salePrice: Number(createDto.salePrice),
         marketPrice: Number(createDto.marketPrice),
         partnerPrice: Number(createDto.partnerPrice),
-        routeID: Number(createDto.route),
         trackingStatus: createDto.trackingStatus,
         trackingNumberLocal: createDto.trackingNumberLocal,
         trackingNumberInternational: createDto.trackingNumberInternational,
         email: createDto.email,
-        categoryID: Number(createDto.category),
-        sourceID: Number(createDto.source),
+        category: {
+          connect: {
+            id: Number(createDto.category)
+          }
+        },
+        source: {
+          connect: {
+            id: Number(createDto.source)
+          }
+        },
+        route: {
+          connect: {
+            id: Number(createDto.route)
+          }
+        },
         currentStock: Number(createDto.qty),
         name: createDto.name,
-        adminId: Number(user),
-        imageCover: image.path,
-      } as unknown as Prisma.StockCreateInput
+        admin: {
+          connect: {
+            id: user
+          }
+        },
+        imageCover: image ? image.path : null,
+      }
     })
 
     if (files && files.length > 0) {
@@ -62,6 +78,19 @@ export class StocksService {
           },
         })
       });
+    }
+
+    const platforms = createDto.platforms || [];
+
+    if (platforms.length > 0) {
+      platforms.map(async (platform) => {
+        await this._prisma.stockPlatform.create({
+          data: {
+            stockID: item.id,
+            platformID: platform
+          }
+        })
+      })
     }
 
     return {

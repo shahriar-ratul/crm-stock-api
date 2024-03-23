@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, SetMetadata, UseInterceptors, UploadedFiles, UseGuards, Query, Put, Request, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, SetMetadata, UseInterceptors, UploadedFiles, UseGuards, Query, Put, Request } from '@nestjs/common';
 import { StocksService } from './stocks.service';
 import { CreateStockDto } from './dto/create-stock.dto';
 import { UpdateStockDto } from './dto/update-stock.dto';
@@ -6,14 +6,14 @@ import { UpdateStockDto } from './dto/update-stock.dto';
 import { diskStorage } from 'multer';
 import * as fs from "fs";
 import * as path from "path";
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AbilityGuard } from '../auth/ability/ability.guard';
 import { PageDto, PageOptionsDto } from '@/common/dto';
 import { Stock } from '@prisma/client';
 
-export const storageAdmin = {
+export const storage = {
   storage: diskStorage({
     destination: "./public/uploads/stocks",
     filename: (req, file, cb) => {
@@ -62,19 +62,32 @@ export class StocksController {
     status: 201,
     description: 'The record has been successfully created.',
   })
-  @SetMetadata('permissions', ['stock.create'])
-  @UseInterceptors(FilesInterceptor("files", 10, storageAdmin))
-  @UseInterceptors(FileInterceptor("image", storageAdmin))
+  // @SetMetadata('permissions', ['stock.create'])
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      {
+        name: 'files',
+        maxCount: 100,
+
+      },
+      {
+        name: 'image',
+        maxCount: 1
+      },
+    ], storage),
+  )
+
   async create(
     @UploadedFiles()
     files: Array<Express.Multer.File>,
-    @UploadedFile()
     image: Express.Multer.File,
     @Body() createDto: CreateStockDto,
     @Request() req: any
   ) {
 
     const user = req.user.id;
+
+    console.log(user);
 
     if (!files && files.length < 1) {
       throw new Error("File is required");

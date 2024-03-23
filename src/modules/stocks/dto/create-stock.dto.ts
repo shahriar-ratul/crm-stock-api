@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Prisma } from '@prisma/client';
 import { Transform } from 'class-transformer';
 import {
     IsEmail,
@@ -212,10 +211,10 @@ export class CreateStockDto {
         type: 'array',
         example: 'platforms',
         description: 'platform json',
-        isArray: true,
     })
     @IsOptional()
-    platforms: Prisma.JsonArray;
+    @Transform(({ value }) => (value ? JSON.parse(value) : []))
+    platforms: number[];
 
 }
 

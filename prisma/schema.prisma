@@ -171,11 +171,11 @@ model Platform{
 
 model Stock{
   id Int @id @default(autoincrement())
-  name String
+  name String?
   stockID String
   entryDate DateTime
   batch String
-  imageCover String
+  imageCover String?
   qty Int
   currentStock Int
   costPerUnit Float
