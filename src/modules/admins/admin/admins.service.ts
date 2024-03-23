@@ -5,6 +5,7 @@ import { PageDto, PageMetaDto, PageOptionsDto } from '@/common/dto';
 import { hash } from 'bcrypt';
 import { PrismaService } from '@/modules/prisma/prisma.service';
 import { Admin, Prisma } from '@prisma/client';
+import { getImageUrl } from '@/common/helpers/GenerateHelpers';
 
 @Injectable()
 export class AdminsService {
@@ -48,14 +49,7 @@ export class AdminsService {
         OR: [
           { email: { contains: search } },
           { username: { contains: search } },
-        ],
-        roles: {
-          some: {
-            role: {
-              slug: "superadmin"
-            }
-          }
-        }
+        ]
       },
       include: {
         roles: {
@@ -104,9 +98,8 @@ export class AdminsService {
   // add admin
   async create(
     createAdminDto: CreateAdminDto,
-    files: Array<Express.Multer.File>
+    file: Express.Multer.File
   ) {
-    console.log(files);
 
     const checkAdmin = await this._prisma.admin.findFirst({
       where: {
@@ -124,40 +117,39 @@ export class AdminsService {
 
     const password = await hash(createAdminDto.password, 15);
 
+    const platforms = createAdminDto.platforms || [];
+
+
     const admin = await this._prisma.admin.create({
       data: {
         fullName: createAdminDto.fullName,
         email: createAdminDto.email,
         username: createAdminDto.username,
         password: password,
-        isActive: createAdminDto.isActive ? true : false,
-
+        contactNo: createAdminDto.contactNo,
+        dob: createAdminDto.dob || null,
+        joinedDate: createAdminDto.joinedDate || null,
+        address: createAdminDto.address,
+        city: createAdminDto.city,
+        country: createAdminDto.country,
+        postcode: createAdminDto.postCode,
+        photo: file ? file.path : null,
+        lastLogin: null,
+        referrerId: createAdminDto.referrerId,
+        relationship: createAdminDto.relationship,
+        platform: platforms,
+        isActive: createAdminDto.isActive,
       },
     });
 
 
-    // createAdminDto.roles.forEach(async (role) => {
-    //   await this._prisma.adminRole.create({
-    //     data: {
-    //       adminId: admin.id,
-    //       roleId: Number(role),
-    //     },
-    //   });
-    // });
-
-    const adminRole = await this._prisma.role.findFirst({
-      where: {
-        slug: 'superadmin',
-      },
-    });
-
-
-
-    await this._prisma.adminRole.create({
-      data: {
-        adminId: admin.id,
-        roleId: adminRole.id,
-      },
+    createAdminDto.roles.forEach(async (role) => {
+      await this._prisma.adminRole.create({
+        data: {
+          adminId: admin.id,
+          roleId: Number(role),
+        },
+      });
     });
 
 
@@ -202,6 +194,7 @@ export class AdminsService {
             },
           }
         },
+        referrer: true,
       },
     });
 
@@ -242,6 +235,11 @@ export class AdminsService {
 
     delete admin.password;
 
+    // convert photo to url
+    if (admin.photo) {
+      admin.photo = getImageUrl(admin.photo);
+    }
+
     return {
       data: admin,
       permissions: sortedPermissions,
@@ -249,7 +247,7 @@ export class AdminsService {
 
   }
 
-  async update(id: number, updateAdminDto: UpdateAdminDto) {
+  async update(id: number, updateAdminDto: UpdateAdminDto, file: Express.Multer.File) {
     const data = await this._prisma.admin.findFirst({
       where: {
         id: id,
@@ -286,9 +284,38 @@ export class AdminsService {
         email: updateAdminDto.email ? updateAdminDto.email : data.email,
         username: updateAdminDto.username ? updateAdminDto.username : data.username,
         isActive: updateAdminDto.isActive ? updateAdminDto.isActive : data.isActive,
+        fullName: updateAdminDto.fullName ? updateAdminDto.fullName : data.fullName,
+        contactNo: updateAdminDto.contactNo ? updateAdminDto.contactNo : data.contactNo,
+        dob: updateAdminDto.dob ? updateAdminDto.dob : data.dob,
+        joinedDate: updateAdminDto.joinedDate ? updateAdminDto.joinedDate : data.joinedDate,
+        referrerId: updateAdminDto.referrerId ? updateAdminDto.referrerId : data.referrerId,
+        relationship: updateAdminDto.relationship ? updateAdminDto.relationship : data.relationship,
+        country: updateAdminDto.country ? updateAdminDto.country : data.country,
+        city: updateAdminDto.city ? updateAdminDto.city : data.city,
+        address: updateAdminDto.address ? updateAdminDto.address : data.address,
+        postcode: updateAdminDto.postCode ? updateAdminDto.postCode : data.postcode,
+        photo: file ? file.path : data.photo,
+        platform: updateAdminDto.platforms ? updateAdminDto.platforms : data.platform,
 
       },
     });
+
+    if (updateAdminDto.referrerId) {
+      await this._prisma.admin.update({
+        where: {
+          id: data.id
+        },
+        data: {
+          referrer: {
+            connect: {
+              id: updateAdminDto.referrerId
+            }
+          }
+        }
+      })
+    }
+
+
 
 
     if (updateAdminDto.password) {
@@ -303,6 +330,7 @@ export class AdminsService {
         },
       });
     }
+
 
 
 
@@ -369,10 +397,8 @@ export class AdminsService {
       throw new HttpException('Admin not found', HttpStatus.BAD_REQUEST);
     }
 
-    console.log(admin)
-
     if (admin.username == "super_admin") {
-      throw new HttpException('Admin Status Cannot be changed', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Admin Can not be deleted', HttpStatus.BAD_REQUEST);
     }
 
 

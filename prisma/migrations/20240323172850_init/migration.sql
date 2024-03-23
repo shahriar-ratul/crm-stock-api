@@ -141,6 +141,17 @@ CREATE TABLE `Route` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `Platform` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(191) NOT NULL,
+    `isActive` BOOLEAN NOT NULL DEFAULT true,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `Stock` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
@@ -157,7 +168,6 @@ CREATE TABLE `Stock` (
     `salePrice` DOUBLE NOT NULL,
     `marketPrice` DOUBLE NOT NULL,
     `partnerPrice` DOUBLE NOT NULL,
-    `platforms` JSON NOT NULL,
     `trackingStatus` VARCHAR(191) NOT NULL,
     `trackingNumberLocal` VARCHAR(191) NOT NULL,
     `trackingNumberInternational` VARCHAR(191) NOT NULL,
@@ -171,6 +181,16 @@ CREATE TABLE `Stock` (
     `updatedAt` DATETIME(3) NOT NULL,
 
     PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `StockPlatform` (
+    `stockID` INTEGER NOT NULL,
+    `platformID` INTEGER NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    PRIMARY KEY (`stockID`, `platformID`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -220,6 +240,12 @@ ALTER TABLE `Stock` ADD CONSTRAINT `Stock_routeID_fkey` FOREIGN KEY (`routeID`) 
 
 -- AddForeignKey
 ALTER TABLE `Stock` ADD CONSTRAINT `Stock_adminId_fkey` FOREIGN KEY (`adminId`) REFERENCES `Admin`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `StockPlatform` ADD CONSTRAINT `StockPlatform_stockID_fkey` FOREIGN KEY (`stockID`) REFERENCES `Stock`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `StockPlatform` ADD CONSTRAINT `StockPlatform_platformID_fkey` FOREIGN KEY (`platformID`) REFERENCES `Platform`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `StockImages` ADD CONSTRAINT `StockImages_stockID_fkey` FOREIGN KEY (`stockID`) REFERENCES `Stock`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

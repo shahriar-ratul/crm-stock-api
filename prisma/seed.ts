@@ -60,7 +60,7 @@ async function main() {
         });
       }
 
-      if (role.slug == 'admin') {
+      if (role.slug == 'streamer') {
         const permissions = await prisma.permission.findMany({
           where: {
             slug: {
@@ -111,7 +111,7 @@ async function main() {
       const roles = await prisma.role.findMany({
         where: {
           NOT: {
-            slug: "user"
+            slug: "streamer"
           }
         }
       });
@@ -146,7 +146,7 @@ async function main() {
 
     const userRole = await prisma.role.findFirst({
       where: {
-        slug: 'user',
+        slug: 'streamer',
       },
     });
 
@@ -161,11 +161,7 @@ async function main() {
 
 
     // make 
-
-
-
-
-    console.log(`Created user with email: ${user.email}`);
+    console.log(`Created streamer with email: ${user.email}`);
   }
 
   console.log(`Seeding finished.`);

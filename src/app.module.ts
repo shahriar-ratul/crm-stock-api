@@ -16,6 +16,7 @@ import { ResponseInterceptor } from './common/interceptor/response.interceptor';
 import { ErrorFilter } from './common/filter/error.filter';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
+import { StocksModule } from './modules/stocks/stocks.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
     }]),
     AuthModule,
     AdminsModule,
+    StocksModule,
 
   ],
   controllers: [AppController],

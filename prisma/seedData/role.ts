@@ -1,19 +1,15 @@
-export const roleData = [{
-    name: "Super Admin",
-    slug: "superadmin",
-    description: "Super Admin Role",
-},
-
+export const roleData = [
     {
-    name: "Admin",
-    slug: "admin",
-    description: "Admin Role",
+        name: "Super Admin",
+        slug: "superadmin",
+        description: "Super Admin Role",
     },
 
     {
-    name: "User",
-    slug: "user",
-    description: "User Role",
-    }
+        name: "streamer",
+        slug: "streamer",
+        description: "streamer Role",
+    },
+
 
 ];

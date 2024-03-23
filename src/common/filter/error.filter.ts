@@ -6,13 +6,18 @@ export class ErrorFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
 
-    // console.log("exception", exception);
+    console.log("exception", exception);
 
     let message = exception.response?.message || null;
 
     if (!message) {
       message = exception.response;
     }
+
+    if (!message) {
+      message = exception.message;
+    }
+
     // convert all message to array
     if (typeof message == 'string') {
       message = [message];
@@ -27,7 +32,7 @@ export class ErrorFilter implements ExceptionFilter {
       error: exception.response?.error,
       message: message,
     };
-
+    // console.log("errorResponse", errorResponse);
     response.status(exception.status || 500).json(errorResponse);
   }
 }

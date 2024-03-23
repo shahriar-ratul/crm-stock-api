@@ -100,4 +100,29 @@ export const permissionData = [
     slug: "profile.update",
     group: "profile",
   },
+
+  // stock
+
+  {
+    name: "stock View",
+    slug: "stock.view",
+    group: "stock",
+  },
+  {
+    name: "stock Create",
+    slug: "stock.create",
+    group: "stock",
+  }, {
+    name: "stock Update",
+    slug: "stock.update",
+    group: "stock",
+  }, {
+    name: "stock Delete",
+    slug: "stock.delete",
+    group: "stock",
+  }, {
+    name: "stock Status",
+    slug: "stock.status",
+    group: "stock",
+  },
 ];

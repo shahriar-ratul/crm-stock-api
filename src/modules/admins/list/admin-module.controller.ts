@@ -32,7 +32,7 @@ export class AdminModuleController {
   // common/all-roles
   @ApiResponse({})
   @Get('/all-roles')
-  @SetMetadata('permissions', ['role.view'])
+    // @SetMetadata('permissions', ['role.view'])
   async getAllRoles() {
     return this._rolesService.getAllRoles();
   }
@@ -40,7 +40,7 @@ export class AdminModuleController {
   // common/all-admins
   @ApiResponse({})
   @Get('/all-admins')
-  @SetMetadata('permissions', ['admin.view'])
+    // @SetMetadata('permissions', ['admin.view'])
   async getAllAdmins() {
     return this._adminsService.getAllAdmins();
   }

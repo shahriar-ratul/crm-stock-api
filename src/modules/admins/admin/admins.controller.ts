@@ -10,7 +10,7 @@ import {
   Query,
   Put,
   UseInterceptors,
-  UploadedFiles,
+  UploadedFile,
 } from '@nestjs/common';
 import { AdminsService } from './admins.service';
 
@@ -25,7 +25,7 @@ import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
 import { diskStorage } from 'multer';
 import * as fs from "fs";
 import * as path from "path";
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Admin } from '@prisma/client';
 
 
@@ -75,18 +75,18 @@ export class AdminsController {
     description: 'The record has been successfully created.',
   })
   @SetMetadata('permissions', ['admin.create'])
-  @UseInterceptors(FilesInterceptor("files", 10, storageAdmin))
+  @UseInterceptors(FileInterceptor("image", storageAdmin))
   async create(
-    @UploadedFiles()
-    files: Array<Express.Multer.File>,
+    @UploadedFile()
+    image: Express.Multer.File,
     @Body() createAdminDto: CreateAdminDto
   ) {
 
-    if (!files && files.length < 1) {
-      throw new Error("File is required");
-    }
+    // if (!image) {
+    //   throw new Error("Image is required");
+    // }
 
-    return this._adminsService.create(createAdminDto, files);
+    return this._adminsService.create(createAdminDto, image);
   }
 
   @Get(':id')
@@ -96,14 +96,18 @@ export class AdminsController {
     return this._adminsService.findById(+id);
   }
 
+
   @Put(':id')
   @ApiResponse({})
   @SetMetadata('permissions', ['admin.update'])
+  @UseInterceptors(FileInterceptor("image", storageAdmin))
   async update(
     @Param('id') id: number,
+    @UploadedFile()
+    image: Express.Multer.File,
     @Body() updateAdminDto: UpdateAdminDto,
   ) {
-    return this._adminsService.update(+id, updateAdminDto);
+    return this._adminsService.update(+id, updateAdminDto, image);
   }
 
   @Delete(':id')

@@ -159,6 +159,16 @@ model Route{
   stocks Stock[]
 }
 
+model Platform{
+  id Int @id @default(autoincrement())
+  name String
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  stocks StockPlatform[]
+}
+
 model Stock{
   id Int @id @default(autoincrement())
   name String
@@ -175,7 +185,6 @@ model Stock{
   salePrice Float
   marketPrice Float
   partnerPrice Float
-  platforms Json
 
   trackingStatus String
   trackingNumberLocal String
@@ -197,11 +206,23 @@ model Stock{
   adminId Int
   admin Admin @relation(fields: [adminId], references: [id],onDelete:  Cascade)
 
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   images StockImages[]
+  platforms StockPlatform[]
+}
+
+model StockPlatform{
+  stockID Int
+  platformID Int
+  stock Stock @relation(fields: [stockID], references: [id],onDelete:  Cascade)
+  platform Platform @relation(fields: [platformID], references: [id],onDelete:  Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([stockID, platformID])
 }
 
 model StockImages{
