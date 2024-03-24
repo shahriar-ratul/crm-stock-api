@@ -109,13 +109,23 @@ export class StocksService {
 
     const order = query.order || 'asc';
 
+    let isActive = undefined;
+
+    if (query.isActive === 'true') {
+      isActive = true;
+    } else if (query.isActive === 'false') {
+      isActive = false;
+    }
+
+
 
     const queryData: Prisma.StockFindManyArgs = {
       where: {
         OR: [
           { email: { contains: search } },
 
-        ]
+        ],
+        isActive: isActive,
       },
       include: {
         category: true,
@@ -196,11 +206,114 @@ export class StocksService {
 
   }
 
-  async update(id: number, updateStockDto: UpdateStockDto) {
-    console.log(updateStockDto);
 
-    return `This action updates a #${id} stock`;
+  async update(
+    id: number,
+    updateDto: UpdateStockDto,
+    files: Array<Express.Multer.File>,
+    image: Express.Multer.File,
+    user: number
+  ) {
+
+    const data = await this._prisma.stock.findFirst({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!data) {
+      throw new HttpException('Item Not Found ', HttpStatus.BAD_REQUEST);
+    }
+
+
+    const item = await this._prisma.stock.update({
+      where: {
+        id: id,
+      },
+      data: {
+        entryDate: updateDto.entryDate,
+        batch: updateDto.batch,
+        stockID: updateDto.productId,
+        qty: Number(updateDto.qty),
+        costPerUnit: Number(updateDto.costPerUnit),
+        localShippingCost: Number(updateDto.localShippingCost),
+        internationalShippingCost: Number(updateDto.internationalShippingCost),
+        customsTax: Number(updateDto.customsTax),
+        salePrice: Number(updateDto.salePrice),
+        marketPrice: Number(updateDto.marketPrice),
+        partnerPrice: Number(updateDto.partnerPrice),
+        trackingStatus: updateDto.trackingStatus,
+        trackingNumberLocal: updateDto.trackingNumberLocal,
+        trackingNumberInternational: updateDto.trackingNumberInternational,
+        email: updateDto.email,
+        category: {
+          connect: {
+            id: Number(updateDto.category)
+          }
+        },
+        source: {
+          connect: {
+            id: Number(updateDto.source)
+          }
+        },
+        route: {
+          connect: {
+            id: Number(updateDto.route)
+          }
+        },
+        currentStock: Number(updateDto.qty),
+        name: updateDto.name,
+        admin: {
+          connect: {
+            id: user
+          }
+        },
+        imageCover: image ? image.path : data.imageCover,
+      }
+    })
+
+    if (files && files.length > 0) {
+
+      files.map(async (file) => {
+        await this._prisma.stockImages.create({
+          data: {
+            stockID: item.id,
+            path: file.path,
+            size: file.size,
+            type: file.mimetype,
+            url: file.path
+          },
+        })
+      });
+    }
+
+    const platforms = updateDto.platforms || [];
+
+    if (platforms.length > 0) {
+
+      await this._prisma.stockPlatform.deleteMany({
+        where: {
+          stockID: item.id
+        }
+      })
+
+
+      platforms.map(async (platform) => {
+        await this._prisma.stockPlatform.create({
+          data: {
+            stockID: item.id,
+            platformID: platform
+          }
+        })
+      })
+    }
+
+    return {
+      data: item,
+      message: 'Item Updated Successfully',
+    };
   }
+
   async remove(id: number) {
 
     const item = await this._prisma.stock.findFirst({

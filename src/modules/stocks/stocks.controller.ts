@@ -87,8 +87,16 @@ export class StocksController {
 
     const user = req.user.id;
 
-    const image = files['image'][0];
-    const otherFiles = files['files'];
+    let image = null;
+    let otherFiles = []
+
+    if (files && files.length > 0) {
+
+      image = files['image'][0];
+      otherFiles = files['files'];
+    }
+
+
     // const image = files[0];
     // console.log(image);
     // console.log(otherFiles);
@@ -107,8 +115,39 @@ export class StocksController {
 
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateStockDto: UpdateStockDto) {
-    return this._stocksService.update(+id, updateStockDto);
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      {
+        name: 'files',
+        maxCount: 100,
+
+      },
+      {
+        name: 'image',
+        maxCount: 1
+      },
+    ], storage),
+  )
+  update(@Param('id') id: string,
+    @UploadedFiles()
+    files: Array<Express.Multer.File>,
+
+    @Body() updateStockDto: UpdateStockDto,
+    @Request() req: any
+  ) {
+    const user = req.user.id;
+
+    let image = null;
+    let otherFiles = [];
+
+    if (files && files.length > 0) {
+
+      image = files['image'][0];
+      otherFiles = files['files'];
+    }
+
+
+    return this._stocksService.update(+id, updateStockDto, otherFiles, image, user);
   }
 
   @Delete(':id')
