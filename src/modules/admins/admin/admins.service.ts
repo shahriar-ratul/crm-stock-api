@@ -25,6 +25,15 @@ export class AdminsService {
     const order = query.order || 'asc';
 
 
+    let isActive = undefined;
+
+    if (query.isActive === 'true') {
+      isActive = true;
+    } else if (query.isActive === 'false') {
+      isActive = false;
+    }
+
+
     // const data = await this._prisma.admin.findMany({
     //   include: {
     //     roles: true,
@@ -49,7 +58,10 @@ export class AdminsService {
         OR: [
           { email: { contains: search } },
           { username: { contains: search } },
-        ]
+          { fullName: { contains: search } },
+          { contactNo: { contains: search } },
+        ],
+        isActive: isActive,
       },
       include: {
         roles: {

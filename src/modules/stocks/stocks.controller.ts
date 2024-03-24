@@ -80,20 +80,29 @@ export class StocksController {
   async create(
     @UploadedFiles()
     files: Array<Express.Multer.File>,
-    image: Express.Multer.File,
+
     @Body() createDto: CreateStockDto,
     @Request() req: any
   ) {
 
     const user = req.user.id;
 
-    console.log(user);
+    const image = files['image'][0];
+    const otherFiles = files['files'];
+    // const image = files[0];
+    // console.log(image);
+    // console.log(otherFiles);
+    // if (!image) {
+    //   throw new Error("Image is required");
+    // }
 
-    if (!files && files.length < 1) {
-      throw new Error("File is required");
-    }
+    // if (!otherFiles && otherFiles.length < 1) {
+    //   throw new Error("File is required");
+    // }
 
-    return this._stocksService.create(createDto, files, image, user);
+
+
+    return this._stocksService.create(createDto, otherFiles, image, user);
   }
 
 

@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsEnum, IsInt, IsOptional, Max, Min } from 'class-validator';
 import { Order } from '../constants/order.constant';
 
@@ -38,6 +38,13 @@ export class PageOptionsDto {
   @ApiPropertyOptional()
   @IsOptional()
   readonly sort?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Transform(({ value }) => (
+    value === 'null' ? undefined : value
+  ))
+  readonly isActive?: string;
 
   get skip(): number {
     return (this.page - 1) * this.limit;

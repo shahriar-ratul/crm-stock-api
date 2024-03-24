@@ -163,11 +163,31 @@ export class StocksService {
       where: {
         id: id,
       },
+      include: {
+        admin: true,
+        category: true,
+        platforms: {
+          include: {
+            platform: true
+          }
+        },
+        images: true,
+        route: true,
+        source: true,
+      }
     });
 
     // convert photo to url
     if (item.imageCover) {
       item.imageCover = getImageUrl(item.imageCover);
+    }
+
+    if (item.images) {
+      item.images = item.images.map((image) => {
+        image.url = getImageUrl(image.url);
+        image.path = getImageUrl(image.path);
+        return image;
+      })
     }
 
     return {
